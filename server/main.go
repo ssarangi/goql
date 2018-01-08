@@ -5,13 +5,21 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/ssarangi/goql/goql"
 )
 
-func handleMetaCommand(command string) {
+func handleMetaCommand(command string) goql.MetaCommandResult {
 	if strings.Compare(command, ".exit") == 0 {
 		os.Exit(0)
-	} else {
-		fmt.Printf("Unrecognized command '%s'.\n", command)
+	}
+
+	return goql.MetaCommandUnrecognized
+}
+
+func checkMetaCommandSuccess(command string, metaCommandResult goql.MetaCommandResult) {
+	if metaCommandResult == goql.MetaCommandUnrecognized {
+		fmt.Printf("Unrecognized MetaCommand encountered: %s\n", command)
 	}
 }
 
@@ -30,10 +38,11 @@ func main() {
 	for true {
 		printPrompt()
 		command := readInput(reader)
-
 		// Handle the metacommands first before handling the SQL commands.
 		if strings.Compare(string(command[0]), ".") == 0 {
-			handleMetaCommand(command)
+			result := handleMetaCommand(command)
+			checkMetaCommandSuccess(command, result)
 		}
+		// If it's not a metacommand then prepare the command to be fed into the VM
 	}
 }
