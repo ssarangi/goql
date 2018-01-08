@@ -19,3 +19,19 @@ const (
 	// SQLCommandSelect Select command from SQL
 	SQLCommandSelect
 )
+
+// PrepareSQLCommandResult Prepare SQL command into structure
+type PrepareSQLCommandResult int32
+
+const (
+	// PrepareSuccess Successfully parsed the SQL command.
+	PrepareSuccess PrepareSQLCommandResult = iota
+	// PrepareUnrecognizedStatement Didn't recognize the statement.
+	PrepareUnrecognizedStatement
+)
+
+// SQLStatement A statement containing the SQL command
+type SQLStatement struct {
+	// CommandType The type of the SQL Command
+	CommandType SQLCommand
+}
