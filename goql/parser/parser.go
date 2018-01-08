@@ -1,5 +1,7 @@
 package goql
 
+// https://blog.gopheracademy.com/advent-2014/parsers-lexers/
+
 import (
 	"fmt"
 	"io"
