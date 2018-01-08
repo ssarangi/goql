@@ -27,7 +27,10 @@ func prepareSQLCommand(command string) (*goql.SQLStatement, goql.PrepareSQLComma
 	statement := new(goql.SQLStatement)
 	sqlCommandResult := goql.PrepareSuccess
 
-	if strings.HasPrefix(command, "insert") == true {
+	// Create statements
+	if strings.HasPrefix(command, "create table") == true {
+		statement.CommandType = goql.SQLCommandCreateTable
+	} else if strings.HasPrefix(command, "insert") == true {
 		statement.CommandType = goql.SQLCommandInsert
 	} else if strings.HasPrefix(command, "select") == true {
 		statement.CommandType = goql.SQLCommandSelect

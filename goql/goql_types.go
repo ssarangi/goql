@@ -14,8 +14,10 @@ const (
 type SQLCommand int32
 
 const (
+	// SQLCommandCreateTable SQL Create Table Command
+	SQLCommandCreateTable SQLCommand = iota
 	// SQLCommandInsert Insert command from SQL
-	SQLCommandInsert SQLCommand = iota
+	SQLCommandInsert
 	// SQLCommandSelect Select command from SQL
 	SQLCommandSelect
 )
