@@ -1,24 +1,24 @@
-package goql_test
+package goqlparser_test
 
 import (
 	"reflect"
 	"strings"
 	"testing"
 
-	goql "github.com/ssarangi/goql/goql/parser"
+	goqlparser "github.com/ssarangi/goql/goql/parser"
 )
 
 // Ensure the parser can parse strings into Statement ASTs.
 func TestParser_ParseStatement(t *testing.T) {
 	var tests = []struct {
 		s    string
-		stmt *goql.SelectStatement
+		stmt *goqlparser.SelectStatement
 		err  string
 	}{
 		// Single field statement
 		{
 			s: `SELECT name FROM tbl`,
-			stmt: &goql.SelectStatement{
+			stmt: &goqlparser.SelectStatement{
 				Fields:    []string{"name"},
 				TableName: "tbl",
 			},
@@ -27,7 +27,7 @@ func TestParser_ParseStatement(t *testing.T) {
 		// Multi-field statement
 		{
 			s: `SELECT first_name, last_name, age FROM my_table`,
-			stmt: &goql.SelectStatement{
+			stmt: &goqlparser.SelectStatement{
 				Fields:    []string{"first_name", "last_name", "age"},
 				TableName: "my_table",
 			},
@@ -36,7 +36,7 @@ func TestParser_ParseStatement(t *testing.T) {
 		// Select all statement
 		{
 			s: `SELECT * FROM my_table`,
-			stmt: &goql.SelectStatement{
+			stmt: &goqlparser.SelectStatement{
 				Fields:    []string{"*"},
 				TableName: "my_table",
 			},
@@ -50,7 +50,7 @@ func TestParser_ParseStatement(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		stmt, err := goql.NewParser(strings.NewReader(tt.s)).Parse()
+		stmt, err := goqlparser.NewParser(strings.NewReader(tt.s)).Parse()
 		if !reflect.DeepEqual(tt.err, errstring(err)) {
 			t.Errorf("%d. %q: error mismatch:\n  exp=%s\n  got=%s\n\n", i, tt.s, tt.err, err)
 		} else if tt.err == "" && !reflect.DeepEqual(tt.stmt, stmt) {

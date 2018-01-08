@@ -6,7 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ssarangi/goql/goql"
+	goql "github.com/ssarangi/goql/goql"
+	goql_parser "github.com/ssarangi/goql/goql/parser"
 )
 
 func handleMetaCommand(command string) goql.MetaCommandResult {
@@ -75,11 +76,12 @@ func main() {
 		}
 
 		// If it's not a metacommand then prepare the command to be fed into the VM
-		sqlStatement, sqlCommandResult := prepareSQLCommand(command)
-		if sqlCommandResult == goql.PrepareUnrecognizedStatement {
-			fmt.Println("Unrecognized SQL command provided")
-		}
+		// sqlStatement, sqlCommandResult := prepareSQLCommand(command)
+		// if sqlCommandResult == goql.PrepareUnrecognizedStatement {
+		// 	fmt.Println("Unrecognized SQL command provided")
+		// }
 
-		executeSQLCommand(sqlStatement)
+		// executeSQLCommand(sqlStatement)
+		goql_parser.NewParser(strings.NewReader(command)).Parse()
 	}
 }

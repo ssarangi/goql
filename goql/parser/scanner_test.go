@@ -1,40 +1,40 @@
-package goql_test
+package goqlparser_test
 
 import (
 	"strings"
 	"testing"
 
-	goql "github.com/ssarangi/goql/goql/parser"
+	goqlparser "github.com/ssarangi/goql/goql/parser"
 )
 
 // Ensure the scanner can scan tokens correctly.
 func TestScanner_Scan(t *testing.T) {
 	var tests = []struct {
 		s   string
-		tok goql.Token
+		tok goqlparser.Token
 		lit string
 	}{
 		// Special tokens (EOF, ILLEGAL, WS)
-		{s: ``, tok: goql.EOF},
-		{s: `#`, tok: goql.ILLEGAL, lit: `#`},
-		{s: ` `, tok: goql.WS, lit: " "},
-		{s: "\t", tok: goql.WS, lit: "\t"},
-		{s: "\n", tok: goql.WS, lit: "\n"},
+		{s: ``, tok: goqlparser.EOF},
+		{s: `#`, tok: goqlparser.ILLEGAL, lit: `#`},
+		{s: ` `, tok: goqlparser.WS, lit: " "},
+		{s: "\t", tok: goqlparser.WS, lit: "\t"},
+		{s: "\n", tok: goqlparser.WS, lit: "\n"},
 
 		// Misc characters
-		{s: `*`, tok: goql.ASTERISK, lit: "*"},
+		{s: `*`, tok: goqlparser.ASTERISK, lit: "*"},
 
 		// Identifiers
-		{s: `foo`, tok: goql.IDENT, lit: `foo`},
-		{s: `Zx12_3U_-`, tok: goql.IDENT, lit: `Zx12_3U_`},
+		{s: `foo`, tok: goqlparser.IDENT, lit: `foo`},
+		{s: `Zx12_3U_-`, tok: goqlparser.IDENT, lit: `Zx12_3U_`},
 
 		// Keywords
-		{s: `FROM`, tok: goql.FROM, lit: "FROM"},
-		{s: `SELECT`, tok: goql.SELECT, lit: "SELECT"},
+		{s: `FROM`, tok: goqlparser.FROM, lit: "FROM"},
+		{s: `SELECT`, tok: goqlparser.SELECT, lit: "SELECT"},
 	}
 
 	for i, tt := range tests {
-		s := goql.NewScanner(strings.NewReader(tt.s))
+		s := goqlparser.NewScanner(strings.NewReader(tt.s))
 		tok, lit := s.Scan()
 		if tt.tok != tok {
 			t.Errorf("%d. %q token mismatch: exp=%q got=%q <%q>", i, tt.s, tt.tok, tok, lit)

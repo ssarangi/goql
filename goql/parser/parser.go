@@ -1,4 +1,4 @@
-package goql
+package goqlparser
 
 // https://blog.gopheracademy.com/advent-2014/parsers-lexers/
 
