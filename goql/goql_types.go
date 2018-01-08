@@ -1,15 +1,11 @@
 package goql
 
-const (
-	// MetaCommandSuccess Successfully parsed meta command state
-	MetaCommandSuccess = 1 << iota
-	// MetaCommandUnrecognized Invalid meta command state passed.
-	MetaCommandUnrecognized
-)
+// SQLCommand SQL command types
+type SQLCommand int32
 
 const (
 	// SQLCommandInsert Insert command from SQL
-	SQLCommandInsert = 1 << iota
+	SQLCommandInsert SQLCommand = iota
 	// SQLCommandSelect Select command from SQL
-	SQLCommandSelect
+	SQLCommandSelect SQLCommand = iota
 )
