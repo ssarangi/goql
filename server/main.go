@@ -7,8 +7,12 @@ import (
 	"strings"
 )
 
-func doMetaCommand(command string) {
-
+func handleMetaCommand(command string) {
+	if strings.Compare(command, ".exit") == 0 {
+		os.Exit(0)
+	} else {
+		fmt.Printf("Unrecognized command '%s'.\n", command)
+	}
 }
 
 func readInput(reader *bufio.Reader) string {
@@ -26,11 +30,10 @@ func main() {
 	for true {
 		printPrompt()
 		command := readInput(reader)
-		if strings.Compare(command, ".exit") == 0 {
-			fmt.Println("Exiting GoQL...")
-			os.Exit(0)
-		} else {
-			fmt.Printf("Unrecognized command '%s'.\n", command)
+
+		// Handle the metacommands first before handling the SQL commands.
+		if strings.Compare(string(command[0]), ".") == 0 {
+			handleMetaCommand(command)
 		}
 	}
 }
