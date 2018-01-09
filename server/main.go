@@ -7,8 +7,29 @@ import (
 	"strings"
 
 	goql "github.com/ssarangi/goql/goql"
-	goql_parser "github.com/ssarangi/goql/goql/parser"
 )
+
+type statementType int32
+
+const (
+	statementINSERT statementType = iota
+	statementSELECT
+	statementCREATETABLE
+)
+
+const columnUsernameSize = 32
+const columnEmailSize = 255
+
+type row struct {
+	id       uint32
+	username [columnUsernameSize]byte
+	email    [columnEmailSize]byte
+}
+
+type statement struct {
+	stmtType    statementType
+	rowToInsert row
+}
 
 func handleMetaCommand(command string) goql.MetaCommandResult {
 	if strings.Compare(command, ".exit") == 0 {
@@ -24,17 +45,18 @@ func checkMetaCommandSuccess(command string, metaCommandResult goql.MetaCommandR
 	}
 }
 
-func prepareSQLCommand(command string) (*goql.SQLStatement, goql.PrepareSQLCommandResult) {
-	statement := new(goql.SQLStatement)
+func prepareSQLCommand(command string) (*statement, goql.PrepareSQLCommandResult) {
+	statement := new(statement)
 	sqlCommandResult := goql.PrepareSuccess
 
 	// Create statements
 	if strings.HasPrefix(command, "create table") == true {
-		statement.CommandType = goql.SQLCommandCreateTable
+		statement.stmtType = statementCREATETABLE
 	} else if strings.HasPrefix(command, "insert") == true {
-		statement.CommandType = goql.SQLCommandInsert
+		statement.stmtType = statementINSERT
+		fmt.Sscanf(command, "insert %s %s %s", statement.rowToInsert.id, statement.rowToInsert.username, statement.rowToInsert.email)
 	} else if strings.HasPrefix(command, "select") == true {
-		statement.CommandType = goql.SQLCommandSelect
+		statement.stmtType = statementSELECT
 	} else {
 		sqlCommandResult = goql.PrepareUnrecognizedStatement
 	}
@@ -42,12 +64,12 @@ func prepareSQLCommand(command string) (*goql.SQLStatement, goql.PrepareSQLComma
 	return statement, sqlCommandResult
 }
 
-func executeSQLCommand(sqlStatement *goql.SQLStatement) {
-	switch sqlStatement.CommandType {
-	case goql.SQLCommandInsert:
+func executeSQLCommand(sqlStatement *statement) {
+	switch statement.stmtType {
+	case statementINSERT:
 		fmt.Println("Insert Statement")
 		break
-	case goql.SQLCommandSelect:
+	case statementSELECT:
 		fmt.Println("Select Statement")
 	}
 }
@@ -76,12 +98,11 @@ func main() {
 		}
 
 		// If it's not a metacommand then prepare the command to be fed into the VM
-		// sqlStatement, sqlCommandResult := prepareSQLCommand(command)
-		// if sqlCommandResult == goql.PrepareUnrecognizedStatement {
-		// 	fmt.Println("Unrecognized SQL command provided")
-		// }
+		sqlStatement, sqlCommandResult := prepareSQLCommand(command)
+		if sqlCommandResult == goql.PrepareUnrecognizedStatement {
+			fmt.Println("Unrecognized SQL command provided")
+		}
 
-		// executeSQLCommand(sqlStatement)
-		goql_parser.NewParser(strings.NewReader(command)).Parse()
+		executeSQLCommand(sqlStatement)
 	}
 }
