@@ -12,6 +12,35 @@ import (
 
 var ctx *goql.Context
 
+func showIntro() {
+	logo :=
+		`
+		        GGGGGGGGGGGGG                      QQQQQQQQQ      LLLLLLLLLLL
+		     GGG::::::::::::G                    QQ:::::::::QQ    L:::::::::L
+		   GG:::::::::::::::G                  QQ:::::::::::::QQ  L:::::::::L
+		  G:::::GGGGGGGG::::G                 Q:::::::QQQ:::::::Q LL:::::::LL
+		 G:::::G       GGGGGG   ooooooooooo   Q::::::O   Q::::::Q   L:::::L
+		G:::::G               oo:::::::::::oo Q:::::O     Q:::::Q   L:::::L
+		G:::::G              o:::::::::::::::oQ:::::O     Q:::::Q   L:::::L
+		G:::::G    GGGGGGGGGGo:::::ooooo:::::oQ:::::O     Q:::::Q   L:::::L
+		G:::::G    G::::::::Go::::o     o::::oQ:::::O     Q:::::Q   L:::::L
+		G:::::G    GGGGG::::Go::::o     o::::oQ:::::O     Q:::::Q   L:::::L
+		G:::::G        G::::Go::::o     o::::oQ:::::O  QQQQ:::::Q   L:::::L
+		 G:::::G       G::::Go::::o     o::::oQ::::::O Q::::::::Q   L:::::L         LLLLLL
+		  G:::::GGGGGGGG::::Go:::::ooooo:::::oQ:::::::QQ::::::::Q LL:::::::LLLLLLLLL:::::L
+		   GG:::::::::::::::Go:::::::::::::::o QQ::::::::::::::Q  L::::::::::::::::::::::L
+		     GGG::::::GGG:::G oo:::::::::::oo    QQ:::::::::::Q   L::::::::::::::::::::::L
+		        GGGGGG   GGGG   ooooooooooo        QQQQQQQQ::::QQ LLLLLLLLLLLLLLLLLLLLLLLL
+		                                                   Q:::::Q
+		                                                    QQQQQQ
+		`
+
+	introString := "Welcome to GoQL: A SQL based database developed in GoLang."
+	fmt.Println(logo)
+	fmt.Println("")
+	fmt.Println(introString)
+}
+
 func handleMetaCommand(command string) goql.MetaCommandResult {
 	if strings.Compare(command, ".exit") == 0 {
 		os.Exit(0)
@@ -37,6 +66,7 @@ func printPrompt() {
 }
 
 func main() {
+	showIntro()
 	ctx = new(goql.Context)
 	reader := bufio.NewReader(os.Stdin)
 	for true {
