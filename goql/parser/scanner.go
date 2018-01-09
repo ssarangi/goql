@@ -93,6 +93,12 @@ func (s *Scanner) scanIdent() (tok Token, lit string) {
 		return SELECT, buf.String()
 	case "FROM":
 		return FROM, buf.String()
+	case "CREATE":
+		return CREATE, buf.String()
+	case "TABLE":
+		return TABLE, buf.String()
+	case "DATABASE":
+		return DATABASE, buf.String()
 	}
 
 	// Otherwise return as a regular identifier

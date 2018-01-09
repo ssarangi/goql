@@ -27,4 +27,10 @@ const (
 	SELECT
 	// FROM Keyword
 	FROM
+	// CREATE Keyword
+	CREATE
+	// DATABASE Keyword
+	DATABASE
+	// TABLE Keyword
+	TABLE
 )

@@ -5,6 +5,9 @@ package goqlparser
 import (
 	"fmt"
 	"io"
+	"log"
+
+	"github.com/ssarangi/goql/goql"
 )
 
 // SelectStatement represents a SQL SELECT statement.
@@ -28,8 +31,36 @@ func NewParser(r io.Reader) *Parser {
 	return &Parser{s: NewScanner(r)}
 }
 
+// Parse parses a SQL statement.
+func (p *Parser) Parse() (*goql.Statement, error) {
+	stmt := new(goql.Statement)
+
+	if tok, _ := p.scanIgnoreWhitespace(); tok == CREATE {
+		if tok, _ := p.scanIgnoreWhitespace(); tok == DATABASE {
+			p.parseCreateDatabase()
+		} else if tok == TABLE {
+			return nil, fmt.Errorf("CREATE TABLE not implemented")
+		}
+	}
+
+	return stmt, nil
+}
+
+func (p *Parser) parseCreateDatabase() (*goql.CreateDatabaseStmt, error) {
+	// Now parse the database name
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != IDENT {
+		return nil, fmt.Errorf("Invalid Identifier passed to 'Create Database " + lit + "'")
+	}
+
+	stmt := new(goql.CreateDatabaseStmt)
+	stmt.DbName = lit
+	log.Println("Created Database: " + lit)
+	return stmt, nil
+}
+
 // Parse parses a SQL SELECT statement.
-func (p *Parser) Parse() (*SelectStatement, error) {
+func (p *Parser) parseStatement() (*SelectStatement, error) {
 	stmt := &SelectStatement{}
 
 	// First token should be a 'SELECT' keyword.

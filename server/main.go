@@ -10,6 +10,8 @@ import (
 	goql_parser "github.com/ssarangi/goql/goql/parser"
 )
 
+var ctx *goql.Context
+
 func handleMetaCommand(command string) goql.MetaCommandResult {
 	if strings.Compare(command, ".exit") == 0 {
 		os.Exit(0)
@@ -63,6 +65,7 @@ func printPrompt() {
 }
 
 func main() {
+	ctx = new(goql.Context)
 	reader := bufio.NewReader(os.Stdin)
 	for true {
 		printPrompt()
@@ -76,12 +79,6 @@ func main() {
 		}
 
 		// If it's not a metacommand then prepare the command to be fed into the VM
-		// sqlStatement, sqlCommandResult := prepareSQLCommand(command)
-		// if sqlCommandResult == goql.PrepareUnrecognizedStatement {
-		// 	fmt.Println("Unrecognized SQL command provided")
-		// }
-
-		// executeSQLCommand(sqlStatement)
 		goql_parser.NewParser(strings.NewReader(command)).Parse()
 	}
 }
