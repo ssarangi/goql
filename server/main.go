@@ -26,34 +26,6 @@ func checkMetaCommandSuccess(command string, metaCommandResult goql.MetaCommandR
 	}
 }
 
-func prepareSQLCommand(command string) (*goql.SQLStatement, goql.PrepareSQLCommandResult) {
-	statement := new(goql.SQLStatement)
-	sqlCommandResult := goql.PrepareSuccess
-
-	// Create statements
-	if strings.HasPrefix(command, "create table") == true {
-		statement.CommandType = goql.SQLCommandCreateTable
-	} else if strings.HasPrefix(command, "insert") == true {
-		statement.CommandType = goql.SQLCommandInsert
-	} else if strings.HasPrefix(command, "select") == true {
-		statement.CommandType = goql.SQLCommandSelect
-	} else {
-		sqlCommandResult = goql.PrepareUnrecognizedStatement
-	}
-
-	return statement, sqlCommandResult
-}
-
-func executeSQLCommand(sqlStatement *goql.SQLStatement) {
-	switch sqlStatement.CommandType {
-	case goql.SQLCommandInsert:
-		fmt.Println("Insert Statement")
-		break
-	case goql.SQLCommandSelect:
-		fmt.Println("Select Statement")
-	}
-}
-
 func readInput(reader *bufio.Reader) string {
 	command, _ := reader.ReadString('\n')
 	command = strings.TrimRight(command, "\n")
