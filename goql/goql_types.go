@@ -37,3 +37,24 @@ type SQLStatement struct {
 	// CommandType The type of the SQL Command
 	CommandType SQLCommand
 }
+
+// SQLConstraint Value type representing a SQL constraint.
+type SQLConstraint int32
+
+// SQLConstraints List of SQL constraints
+const (
+	// SQLConstraintNOTNULL Not Null constraint.
+	SQLConstraintNOTNULL SQLConstraint = iota
+	// SQLConstraintUNIQUE Unique constraint.
+	SQLConstraintUNIQUE
+	// SQLConstraintPRIMARYKEY Primary Key constraint
+	SQLConstraintPRIMARYKEY
+	// SQLConstraintFOREIGNKEY Foreign Key constraint
+	SQLConstraintFOREIGNKEY
+	// SQLConstraintCHECK Check constraint
+	SQLConstraintCHECK
+	// SQLConstraintDEFAULT Default constraint
+	SQLConstraintDEFAULT
+	// SQLConstraintINDEX Index constraint
+	SQLConstraintINDEX
+)
