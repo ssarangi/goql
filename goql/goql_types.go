@@ -16,6 +16,8 @@ type SQLCommand int32
 const (
 	// SQLCommandCreateTable SQL Create Table Command
 	SQLCommandCreateTable SQLCommand = iota
+	// SQLCommandCreateDatabase SQL Create Database Command
+	SQLCommandCreateDatabase
 	// SQLCommandInsert Insert command from SQL
 	SQLCommandInsert
 	// SQLCommandSelect Select command from SQL

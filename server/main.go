@@ -79,6 +79,10 @@ func main() {
 		}
 
 		// If it's not a metacommand then prepare the command to be fed into the VM
-		goql_parser.NewParser(strings.NewReader(command)).Parse()
+		stmt, error := goql_parser.NewParser(strings.NewReader(command)).Parse()
+		if error != nil {
+			fmt.Println(error)
+		}
+		ctx.Execute(*stmt)
 	}
 }

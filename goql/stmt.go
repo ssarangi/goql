@@ -2,6 +2,7 @@ package goql
 
 // Statement default statement interface
 type Statement interface {
+	Type() SQLCommand
 	String() string
 }
 
@@ -27,6 +28,10 @@ type CreateDatabaseStmt struct {
 	DbName string
 }
 
-func (c *CreateDatabaseStmt) String() string {
+func (c CreateDatabaseStmt) String() string {
 	return "CREATE DATABASE " + c.DbName
+}
+
+func (c CreateDatabaseStmt) Type() SQLCommand {
+	return SQLCommandCreateDatabase
 }
