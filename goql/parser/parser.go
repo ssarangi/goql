@@ -119,7 +119,11 @@ func (p *Parser) parseColumnDefinitions() ([]*goql.TableColumn, error) {
 			return nil, err
 		}
 		columns = append(columns, columnDef)
+		tok, _ = p.peekIgnoreWhitespace()
 	}
+
+	// Scan the )
+	_, _ = p.scanIgnoreWhitespace()
 
 	return columns, nil
 }
@@ -131,8 +135,13 @@ func (p *Parser) parseCreateTable() (*goql.CreateTableStmt, error) {
 		return nil, fmt.Errorf("Expected TABLE_NAME after CREATE TABLE command but got %s: %s", lit, p.command)
 	}
 
-	p.parseColumnDefinitions()
-	return nil, nil
+	ctstmt := new(goql.CreateTableStmt)
+	columns, err := p.parseColumnDefinitions()
+	ctstmt.Columns = columns
+	if err != nil {
+		return nil, err
+	}
+	return ctstmt, nil
 }
 
 // Parse parses a SQL SELECT statement.

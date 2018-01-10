@@ -48,7 +48,7 @@ type TableColumn struct {
 type CreateTableStmt struct {
 	exists    bool
 	TableName string
-	Columns   *[]TableColumn
+	Columns   []*TableColumn
 }
 
 func (c CreateTableStmt) String() string {
