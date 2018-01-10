@@ -89,7 +89,7 @@ func (p *Parser) parseColumnDataType() (goql.SQLColumnDataType, uint32, error) {
 		break
 	}
 
-	return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Invalid Column datatype specified: %s Command: %s", tok, p.command)
+	return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Invalid Column datatype specified: %d Command: %s", tok, p.command)
 }
 
 func (p *Parser) parseSingleColumnDefinition() (*goql.TableColumn, error) {
