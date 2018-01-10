@@ -21,6 +21,10 @@ const (
 	ASTERISK // *
 	// COMMA , character
 	COMMA // ,
+	// LEFT_BRACKET left bracket
+	LEFT_BRACKET // (
+	// RIGHT_BRACKET right bracket
+	RIGHT_BRACKET // )
 
 	// Keywords
 	// SELECT Keyword
@@ -33,4 +37,10 @@ const (
 	DATABASE
 	// TABLE Keyword
 	TABLE
+
+	// DATATypes
+	// VARCHAR variable characters
+	VARCHAR
+	// INT integer
+	INT
 )

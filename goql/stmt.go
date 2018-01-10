@@ -37,18 +37,18 @@ func (c CreateDatabaseStmt) Type() SQLCommand {
 	return SQLCommandCreateDatabase
 }
 
-// Column structure representing the column in a table
-type Column struct {
+// TableColumn structure representing the column in a table
+type TableColumn struct {
 	Name string
 	Type SQLColumnDataType
-	Size int32
+	Size uint32
 }
 
 // CreateTableStmt Create Table Statement
 type CreateTableStmt struct {
 	exists    bool
 	TableName string
-	Columns   *[]Column
+	Columns   *[]TableColumn
 }
 
 func (c CreateTableStmt) String() string {

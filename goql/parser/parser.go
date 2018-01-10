@@ -4,8 +4,8 @@ package goqlparser
 
 import (
 	"fmt"
-	"io"
 	"log"
+	"strings"
 
 	"github.com/ssarangi/goql/goql"
 )
@@ -18,8 +18,9 @@ type SelectStatement struct {
 
 // Parser represents a parser
 type Parser struct {
-	s   *Scanner
-	buf struct {
+	command string
+	s       *Scanner
+	buf     struct {
 		tok Token  // last read token
 		lit string // last read literal
 		n   int    // buffer size (max=1)
@@ -27,12 +28,12 @@ type Parser struct {
 }
 
 // NewParser returns a new instance of Parser.
-func NewParser(r io.Reader) *Parser {
-	return &Parser{s: NewScanner(r)}
+func NewParser(command string) *Parser {
+	return &Parser{s: NewScanner(strings.NewReader(command))}
 }
 
 // Parse parses a SQL statement.
-func (p *Parser) Parse() (*goql.Statement, error) {
+func (p *Parser) Parse() (goql.Statement, error) {
 	var stmt goql.Statement
 	var err error
 	if tok, _ := p.scanIgnoreWhitespace(); tok == CREATE {
@@ -59,7 +60,78 @@ func (p *Parser) parseCreateDatabase() (*goql.CreateDatabaseStmt, error) {
 	return stmt, nil
 }
 
+func (p *Parser) parseColumnName() (string, error) {
+	// Parse the column name
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != IDENT {
+		return "", fmt.Errorf("Expected COLUMN NAME after CREATE TABLE <table name>")
+	}
+
+	return lit, nil
+}
+
+func (p *Parser) parseColumnDataType() (goql.SQLColumnDataType, uint32, error) {
+	tok, _ := p.scanIgnoreWhitespace()
+	switch tok {
+	case VARCHAR:
+		// Now read the size
+		tok, _ = p.scanIgnoreWhitespace()
+		if tok != LEFT_BRACKET {
+			return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("No size specified for VARCHAR: %s", p.command)
+		}
+		tok, _ = p.scanIgnoreWhitespace()
+
+		if tok != RIGHT_BRACKET {
+			return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Incorrect size format: %s", p.command)
+		}
+		break
+	case INT:
+		break
+	}
+
+	return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Invalid Column datatype specified: %s Command: %s", tok, p.command)
+}
+
+func (p *Parser) parseSingleColumnDefinition() (*goql.TableColumn, error) {
+	columnName, err := p.parseColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	columnDataType, size, err := p.parseColumnDataType()
+	c := &goql.TableColumn{Name: columnName, Type: columnDataType, Size: size}
+
+	return c, nil
+}
+
+func (p *Parser) parseColumnDefinitions() ([]*goql.TableColumn, error) {
+	// Find the column definition
+	tok, _ := p.scanIgnoreWhitespace()
+	if tok != LEFT_BRACKET {
+		return nil, fmt.Errorf("Expected ( after TABLE NAME")
+	}
+
+	var columns []*goql.TableColumn
+
+	for tok != RIGHT_BRACKET {
+		columnDef, err := p.parseSingleColumnDefinition()
+		if err != nil {
+			return nil, err
+		}
+		columns = append(columns, columnDef)
+	}
+
+	return columns, nil
+}
+
 func (p *Parser) parseCreateTable() (*goql.CreateTableStmt, error) {
+	// We have already parsed till Table. Now parse the table name
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != IDENT {
+		return nil, fmt.Errorf("Expected TABLE_NAME after CREATE TABLE command but got %s: %s", lit, p.command)
+	}
+
+	p.parseColumnDefinitions()
 	return nil, nil
 }
 
@@ -135,3 +207,20 @@ func (p *Parser) scanIgnoreWhitespace() (tok Token, lit string) {
 
 // unscan pushes the previously read token back onto the buffer.
 func (p *Parser) unscan() { p.buf.n = 1 }
+
+// Peek to the next character
+func (p *Parser) peekIgnoreWhitespace() (tok Token, lit string) {
+	tok, lit = p.scan()
+	scanCount := 0
+
+	for tok == WS {
+		tok, lit = p.scan()
+		scanCount++
+	}
+
+	for i := 0; i < scanCount; i++ {
+		p.unscan()
+	}
+
+	return
+}
