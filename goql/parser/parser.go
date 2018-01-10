@@ -33,17 +33,17 @@ func NewParser(r io.Reader) *Parser {
 
 // Parse parses a SQL statement.
 func (p *Parser) Parse() (*goql.Statement, error) {
-	stmt := new(goql.Statement)
-
+	var stmt goql.Statement
+	var err error
 	if tok, _ := p.scanIgnoreWhitespace(); tok == CREATE {
 		if tok, _ := p.scanIgnoreWhitespace(); tok == DATABASE {
-			p.parseCreateDatabase()
+			stmt, err = p.parseCreateDatabase()
 		} else if tok == TABLE {
-			return nil, fmt.Errorf("CREATE TABLE not implemented")
+			stmt, err = p.parseCreateTable()
 		}
 	}
 
-	return stmt, nil
+	return stmt, err
 }
 
 func (p *Parser) parseCreateDatabase() (*goql.CreateDatabaseStmt, error) {
@@ -57,6 +57,10 @@ func (p *Parser) parseCreateDatabase() (*goql.CreateDatabaseStmt, error) {
 	stmt.DbName = lit
 	log.Println("Created Database: " + lit)
 	return stmt, nil
+}
+
+func (p *Parser) parseCreateTable() (*goql.CreateTableStmt, error) {
+	return nil, nil
 }
 
 // Parse parses a SQL SELECT statement.

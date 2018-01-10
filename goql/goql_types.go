@@ -60,3 +60,13 @@ const (
 	// SQLConstraintINDEX Index constraint
 	SQLConstraintINDEX
 )
+
+// SQLColumnDataType Datatype representing the different columns.
+type SQLColumnDataType int32
+
+const (
+	// SQLColumnVARCHAR Variable Characters
+	SQLColumnVARCHAR SQLColumnDataType = iota
+	// SQLColumnINT Integer
+	SQLColumnINT
+)
