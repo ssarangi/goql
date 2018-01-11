@@ -69,6 +69,8 @@ const (
 	SQLColumnVARCHAR SQLColumnDataType = iota
 	// SQLColumnINT Integer
 	SQLColumnINT
+	// SQLColumnBOOLEAN Boolean
+	SQLColumnBOOLEAN
 	// SQLColumnUNKNOWN unknown size
 	SQLColumnUNKNOWN
 )

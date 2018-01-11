@@ -5,6 +5,7 @@ package goqlparser
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/ssarangi/goql/goql"
@@ -79,14 +80,21 @@ func (p *Parser) parseColumnDataType() (goql.SQLColumnDataType, uint32, error) {
 		if tok != LEFT_BRACKET {
 			return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("No size specified for VARCHAR: %s", p.command)
 		}
-		tok, _ = p.scanIgnoreWhitespace()
+		_, litsize := p.scanIgnoreWhitespace()
+		isize, err := strconv.Atoi(litsize)
+		if err != nil {
+			return goql.SQLColumnUNKNOWN, 0, nil
+		}
 
+		tok, _ = p.scanIgnoreWhitespace()
 		if tok != RIGHT_BRACKET {
 			return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Incorrect size format: %s", p.command)
 		}
-		break
+		return goql.SQLColumnVARCHAR, uint32(isize), nil
 	case INT:
-		break
+		return goql.SQLColumnINT, 0, nil
+	case BOOLEAN:
+		return goql.SQLColumnBOOLEAN, 0, nil
 	}
 
 	return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Invalid Column datatype specified: %d Command: %s", tok, p.command)
@@ -136,6 +144,8 @@ func (p *Parser) parseCreateTable() (*goql.CreateTableStmt, error) {
 	}
 
 	ctstmt := new(goql.CreateTableStmt)
+	ctstmt.TableName = lit
+
 	columns, err := p.parseColumnDefinitions()
 	ctstmt.Columns = columns
 	if err != nil {

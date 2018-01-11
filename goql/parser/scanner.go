@@ -28,6 +28,9 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 	if isWhitespace(ch) {
 		s.unread()
 		return s.scanWhitespace()
+	} else if isDigit(ch) {
+		s.unread()
+		return s.scanDigits()
 	} else if isLetter(ch) {
 		s.unread()
 		return s.scanIdent()
@@ -41,6 +44,12 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 		return ASTERISK, string(ch)
 	case ',':
 		return COMMA, string(ch)
+	case '(':
+		return LEFT_BRACKET, string(ch)
+	case ')':
+		return RIGHT_BRACKET, string(ch)
+	case ';':
+		return SEMICOLON, string(ch)
 	}
 
 	return ILLEGAL, string(ch)
@@ -66,6 +75,27 @@ func (s *Scanner) scanWhitespace() (tok Token, lit string) {
 	}
 
 	return WS, buf.String()
+}
+
+func (s *Scanner) scanDigits() (tok Token, lit string) {
+	// Create a buffer and read the characters
+	var buf bytes.Buffer
+	buf.WriteRune(s.read())
+
+	// Read every subsequent ident character into the buffer.
+	// Non-ident characters and EOF will cause the loop to exit.
+	for {
+		if ch := s.read(); ch == eof {
+			break
+		} else if !isDigit(ch) && ch != '.' {
+			s.unread()
+			break
+		} else {
+			_, _ = buf.WriteRune(ch)
+		}
+	}
+
+	return INT, buf.String()
 }
 
 // scanIdent consumes the current rune and all contiguous ident runes
@@ -99,6 +129,13 @@ func (s *Scanner) scanIdent() (tok Token, lit string) {
 		return TABLE, buf.String()
 	case "DATABASE":
 		return DATABASE, buf.String()
+	case "VARCHAR":
+		return VARCHAR, buf.String()
+	case "INT":
+		return INT, buf.String()
+	case "BOOLEAN":
+		return BOOLEAN, buf.String()
+
 	}
 
 	// Otherwise return as a regular identifier

@@ -25,6 +25,8 @@ const (
 	LEFT_BRACKET // (
 	// RIGHT_BRACKET right bracket
 	RIGHT_BRACKET // )
+	// SEMICOLON semi colon
+	SEMICOLON
 
 	// Keywords
 	// SELECT Keyword
@@ -43,4 +45,6 @@ const (
 	VARCHAR
 	// INT integer
 	INT
+	// BOOLEAN bool
+	BOOLEAN
 )
