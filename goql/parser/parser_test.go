@@ -59,6 +59,14 @@ func TestParser_ParseStatement(t *testing.T) {
 	}
 }
 
+func TestParser_ParseStatement(t *testing.T) {
+	var tests = []struct {
+		s    string
+		stmt *goqlparser.SelectStatement
+		err  string
+	}{}
+}
+
 // errstring returns the string representation of an error.
 func errstring(err error) string {
 	if err != nil {
