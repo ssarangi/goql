@@ -62,7 +62,7 @@ func TestParser_ParseStatement(t *testing.T) {
 func TestParser_ParseStatement(t *testing.T) {
 	var tests = []struct {
 		s    string
-		stmt *goqlparser.SelectStatement
+		stmt *goqlparser.
 		err  string
 	}{}
 }

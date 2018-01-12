@@ -38,9 +38,10 @@ func (c CreateDatabaseStmt) Type() SQLCommand {
 }
 
 // TableColumn structure representing the column in a table
-type TableColumn struct {
+type TableColumnDefinition struct {
 	Name string
 	Type SQLColumnDataType
+	// Size is in bytes
 	Size uint32
 }
 
@@ -48,7 +49,7 @@ type TableColumn struct {
 type CreateTableStmt struct {
 	exists    bool
 	TableName string
-	Columns   []*TableColumn
+	Columns   []*TableColumnDefinition
 }
 
 func (c CreateTableStmt) String() string {
@@ -58,4 +59,25 @@ func (c CreateTableStmt) String() string {
 // Type type of the command
 func (c CreateTableStmt) Type() SQLCommand {
 	return SQLCommandCreateTable
+}
+
+const (
+	columnUsernameSize = 32
+	columnEmailSize    = 255
+)
+
+// InsertStmt insert Statement into the database
+type InsertStmt struct {
+	ID       uint32
+	Username [columnUsernameSize]byte
+	Email    [columnEmailSize]byte
+}
+
+func (c InsertStmt) String() string {
+	return "Insert"
+}
+
+// Type type of the command
+func (c InsertStmt) Type() SQLCommand {
+	return SQLCommandInsert
 }

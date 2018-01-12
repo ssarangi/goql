@@ -37,12 +37,15 @@ func NewParser(command string) *Parser {
 func (p *Parser) Parse() (goql.Statement, error) {
 	var stmt goql.Statement
 	var err error
+
 	if tok, _ := p.scanIgnoreWhitespace(); tok == CREATE {
 		if tok, _ := p.scanIgnoreWhitespace(); tok == DATABASE {
 			stmt, err = p.parseCreateDatabase()
 		} else if tok == TABLE {
 			stmt, err = p.parseCreateTable()
 		}
+	} else if tok == INSERT {
+		stmt, err = p.parseInsert()
 	}
 
 	return stmt, err
@@ -92,34 +95,34 @@ func (p *Parser) parseColumnDataType() (goql.SQLColumnDataType, uint32, error) {
 		}
 		return goql.SQLColumnVARCHAR, uint32(isize), nil
 	case INT:
-		return goql.SQLColumnINT, 0, nil
+		return goql.SQLColumnINT, 4, nil
 	case BOOLEAN:
-		return goql.SQLColumnBOOLEAN, 0, nil
+		return goql.SQLColumnBOOLEAN, 1, nil
 	}
 
 	return goql.SQLColumnUNKNOWN, 0, fmt.Errorf("Invalid Column datatype specified: %d Command: %s", tok, p.command)
 }
 
-func (p *Parser) parseSingleColumnDefinition() (*goql.TableColumn, error) {
+func (p *Parser) parseSingleColumnDefinition() (*goql.TableColumnDefinition, error) {
 	columnName, err := p.parseColumnName()
 	if err != nil {
 		return nil, err
 	}
 
 	columnDataType, size, err := p.parseColumnDataType()
-	c := &goql.TableColumn{Name: columnName, Type: columnDataType, Size: size}
+	c := &goql.TableColumnDefinition{Name: columnName, Type: columnDataType, Size: size}
 
 	return c, nil
 }
 
-func (p *Parser) parseColumnDefinitions() ([]*goql.TableColumn, error) {
+func (p *Parser) parseColumnDefinitions() ([]*goql.TableColumnDefinition, error) {
 	// Find the column definition
 	tok, _ := p.scanIgnoreWhitespace()
 	if tok != LEFT_BRACKET {
 		return nil, fmt.Errorf("Expected ( after TABLE NAME")
 	}
 
-	var columns []*goql.TableColumn
+	var columns []*goql.TableColumnDefinition
 
 	for tok != RIGHT_BRACKET {
 		columnDef, err := p.parseSingleColumnDefinition()
@@ -134,6 +137,27 @@ func (p *Parser) parseColumnDefinitions() ([]*goql.TableColumn, error) {
 	_, _ = p.scanIgnoreWhitespace()
 
 	return columns, nil
+}
+
+func (p *Parser) parseInsert() (*goql.InsertStmt, error) {
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != INT {
+		return nil, fmt.Errorf("Expected ID in insert statement statement")
+	}
+
+	id, err := strconv.ParseUint(lit, 32, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Expected 32 bit integer for id")
+	}
+
+	tok, lit = p.scanIgnoreWhitespace()
+	username := lit
+
+	tok, lit = p.scanIgnoreWhitespace()
+	email := lit
+	insertStmt := &goql.InsertStmt{Id: id, Username: username, Email: email}
+
+	return insertStmt, nil
 }
 
 func (p *Parser) parseCreateTable() (*goql.CreateTableStmt, error) {

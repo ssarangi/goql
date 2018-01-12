@@ -39,6 +39,8 @@ const (
 	DATABASE
 	// TABLE Keyword
 	TABLE
+	// INSERT Keyword
+	INSERT
 
 	// DATATypes
 	// VARCHAR variable characters

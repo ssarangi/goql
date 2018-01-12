@@ -125,6 +125,8 @@ func (s *Scanner) scanIdent() (tok Token, lit string) {
 		return FROM, buf.String()
 	case "CREATE":
 		return CREATE, buf.String()
+	case "INSERT":
+		return INSERT, buf.String()
 	case "TABLE":
 		return TABLE, buf.String()
 	case "DATABASE":
